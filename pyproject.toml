@@ -1,0 +1,9 @@
+[project]
+name = "cvforge"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "python-dateutil>=2.9.0.post0",
+    "reportlab>=4.4.7",
+]
