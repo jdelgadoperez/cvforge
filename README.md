@@ -6,31 +6,21 @@ Convert markdown resume to professional PDF with clean, customizable design.
 
 ```bash
 # Install dependencies
-pip install reportlab python-dateutil
+uv sync
 
 # Generate your resume
-python3 markdown_to_resume_pdf.py resume.md
+uv run python markdown_to_resume_pdf.py resume.md
 ```
 
 ## Installation
 
-### Quick Install (All Dependencies)
+### Using uv (Recommended)
 
 ```bash
-pip install reportlab python-dateutil
+uv sync
 ```
 
-Or use the requirements file:
-
-```bash
-pip install -r requirements.txt
-```
-
-### Minimal Install (Required Only)
-
-```bash
-pip install reportlab
-```
+This installs all dependencies from `pyproject.toml` into a virtual environment automatically.
 
 Note: Without `python-dateutil`, duration calculations (e.g., "1 year 10 months") will be skipped, but the PDF will still generate successfully.
 
@@ -250,19 +240,15 @@ See example resume files for complete formatting details.
 
 ### "ModuleNotFoundError: No module named 'reportlab'"
 
-Install reportlab:
+Install dependencies:
 
 ```bash
-pip install reportlab
+uv sync
 ```
 
 ### "python-dateutil not installed" Warning
 
-This is optional. Install for automatic duration calculations:
-
-```bash
-pip install python-dateutil
-```
+Run `uv sync` to install all dependencies including python-dateutil for automatic duration calculations.
 
 ### "Permission denied" Error
 
@@ -314,7 +300,7 @@ MIT License - feel free to use and modify for your needs.
 
 For issues or questions:
 
-1. Check dependencies: `pip list | grep -E "reportlab|dateutil"`
+1. Check dependencies: `uv pip list | grep -E "reportlab|dateutil"`
 2. Verify markdown format matches expected structure
 3. Check `modules/config.py` for customization options
 4. Review `config.example.py` for theme examples

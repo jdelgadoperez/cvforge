@@ -113,7 +113,7 @@ class Config:
     # Set to empty string to disable and use current directory instead
     INPUTS_FOLDER = "inputs"  # os.path.expanduser("~/projects/sandbox/inputs")
     OUTPUTS_FOLDER = (
-        "outputs"  # os.path.expanduser("~/projects/sandbox/resume/exports")
+        "outputs"  # os.path.expanduser("~/projects/sandbox/resume/outputs")
     )
 
     # ====================
