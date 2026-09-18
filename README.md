@@ -165,6 +165,7 @@ See `modules/config.py` for complete list of customizable options.
 
 ```
 resume/
+├── .github/                   # GitHub metadata (holds the funding link)
 ├── markdown_to_resume_pdf.py  # Main entry point (90 lines)
 ├── config.example.py          # Example themes and customization guide
 ├── modules/
@@ -291,6 +292,14 @@ Contributions welcome! The modular architecture makes it easy to:
 - Support additional markdown features
 - Enhance PDF formatting
 - Improve error handling
+
+## Found this useful?
+
+If you'd like to buy me a coffee or send a tip, it's much appreciated.
+
+[![Say thanks on Ko-fi](https://img.shields.io/badge/Ko--fi-Say%20thanks-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/jessdp)
+
+A star works just as well.
 
 ## License
 

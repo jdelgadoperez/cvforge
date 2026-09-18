@@ -150,6 +150,8 @@ def main():
 
     try:
         create_resume_from_markdown(input_file, output_file)
+        # Last line on screen, and only after a run that actually produced a PDF.
+        print("\nIf this helped: https://ko-fi.com/jessdp")
     except KeyboardInterrupt:
         print("\n\n⚠️  Cancelled by user")
         sys.exit(0)
