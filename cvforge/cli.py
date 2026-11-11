@@ -11,6 +11,7 @@ and the legacy ``markdown_to_resume_pdf.py`` wrapper route here too.
 import argparse
 import contextlib
 import json
+import os
 import sys
 
 from . import __version__
@@ -152,7 +153,14 @@ def main(argv=None):
     if not getattr(args, "func", None):
         parser.print_help(sys.stderr)
         return 2
-    return args.func(args)
+    try:
+        return args.func(args)
+    except BrokenPipeError:
+        # The reader closed early (e.g. `cvforge parse r.md | head`). Point stdout at devnull so
+        # the interpreter's final flush doesn't raise again, and exit quietly like other CLIs.
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull, sys.stdout.fileno())
+        return 141
 
 
 if __name__ == "__main__":

@@ -113,3 +113,20 @@ def test_console_script_parse(sample_path):
         ["cvforge", "parse", str(sample_path)], capture_output=True, text=True, check=True
     )
     assert json.loads(result.stdout)["schema_version"] == SCHEMA_VERSION
+
+
+def test_parse_exits_quietly_when_the_reader_closes_early(tmp_path):
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    sample = Path(__file__).resolve().parent.parent / "inputs" / "test_resume.md"
+    proc = subprocess.run(
+        f'"{sys.executable}" -m cvforge parse "{sample}" | head -c 10',
+        shell=True,
+        capture_output=True,
+        text=True,
+        cwd=tmp_path,
+    )
+    assert proc.stdout.startswith("{")
+    assert "Traceback" not in proc.stderr
