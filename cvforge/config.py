@@ -6,7 +6,6 @@ Config class below. Every renderer reads from it. See config.example.py at the
 repository root for ready-made themes to copy from.
 """
 
-import os
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
@@ -25,9 +24,7 @@ class Config:
         "#1e40af"
     )  # Darker professional blue - used for headers and dividers
     ACCENT_COLOR = colors.HexColor("#1e3a8a")  # Even darker blue - used for subtitles
-    LIGHT_GRAY = colors.HexColor(
-        "#6b7280"
-    )  # Gray for secondary text (dates, locations)
+    LIGHT_GRAY = colors.HexColor("#6b7280")  # Gray for secondary text (dates, locations)
     DARK_GRAY = colors.HexColor("#1f2937")  # Almost black for main text
 
     # ====================
@@ -109,9 +106,7 @@ class Config:
     # Default input/output directories (can be overridden via command line)
     # Set to empty string to disable and use current directory instead
     INPUTS_FOLDER = "inputs"  # os.path.expanduser("~/projects/sandbox/inputs")
-    OUTPUTS_FOLDER = (
-        "outputs"  # os.path.expanduser("~/projects/sandbox/resume/outputs")
-    )
+    OUTPUTS_FOLDER = "outputs"  # os.path.expanduser("~/projects/sandbox/resume/outputs")
 
     # ====================
     # FEATURE FLAGS

@@ -23,7 +23,7 @@ See the examples below for different customization scenarios.
 """
 
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 
 
@@ -35,7 +35,7 @@ class GreenThemeConfig:
 
     # Color scheme
     PRIMARY_COLOR = colors.HexColor("#047857")  # Emerald green
-    ACCENT_COLOR = colors.HexColor("#065f46")   # Darker green
+    ACCENT_COLOR = colors.HexColor("#065f46")  # Darker green
     LIGHT_GRAY = colors.HexColor("#6b7280")
     DARK_GRAY = colors.HexColor("#1f2937")
 
@@ -175,9 +175,9 @@ class ClassicConfig:
 
     # Simple black/gray colors
     PRIMARY_COLOR = colors.HexColor("#000000")  # Pure black
-    ACCENT_COLOR = colors.HexColor("#333333")   # Dark gray
-    LIGHT_GRAY = colors.HexColor("#666666")     # Medium gray
-    DARK_GRAY = colors.HexColor("#000000")      # Black
+    ACCENT_COLOR = colors.HexColor("#333333")  # Dark gray
+    LIGHT_GRAY = colors.HexColor("#666666")  # Medium gray
+    DARK_GRAY = colors.HexColor("#000000")  # Black
 
     # Fonts
     FONT_FAMILY_BASE = "Helvetica"

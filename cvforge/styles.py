@@ -5,8 +5,9 @@ Creates and manages ReportLab paragraph styles used throughout the resume.
 All style properties are configured via the Config class.
 """
 
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_LEFT, TA_CENTER
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+
 from .config import Config
 
 

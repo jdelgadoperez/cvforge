@@ -70,7 +70,7 @@ def calculate_duration(date_string):
         # Parse start date
         try:
             start_date = date_parser.parse(start_str, fuzzy=True)
-        except:
+        except (ValueError, OverflowError):
             return ""
 
         # Parse end date (handle "Present" as today)
@@ -79,7 +79,7 @@ def calculate_duration(date_string):
         else:
             try:
                 end_date = date_parser.parse(end_str, fuzzy=True)
-            except:
+            except (ValueError, OverflowError):
                 return ""
 
         # Calculate difference

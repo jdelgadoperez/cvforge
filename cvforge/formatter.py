@@ -39,9 +39,7 @@ def convert_markdown_formatting(text):
 
     # Links [text](url) - process this first before bold conversion
     # to avoid interfering with **text** patterns in URLs
-    text = re.sub(
-        r"\[([^\]]+)\]\(([^)]+)\)", r'<link href="\2" color="blue">\1</link>', text
-    )
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<link href="\2" color="blue">\1</link>', text)
 
     # Bold **text** - use non-greedy matching to handle multiple bolds on one line
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)

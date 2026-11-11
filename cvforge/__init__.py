@@ -46,19 +46,19 @@ __author__ = "Jess Delgado Perez"
 
 # Convenient imports for common usage
 from .config import Config
-from .parser import parse_markdown_resume, validate_parsed_data
+from .duration import is_dateutil_available, warn_if_dateutil_unavailable
 from .generator import generate_pdf_from_data
+from .parser import parse_markdown_resume, validate_parsed_data
 from .structured import SCHEMA_VERSION, to_structured
 from .validators import (
     check_dependencies,
-    validate_input_file,
-    validate_file_extension,
     check_output_file_overwrite,
-    read_markdown_file,
-    validate_output_path,
     generate_output_filename,
+    read_markdown_file,
+    validate_file_extension,
+    validate_input_file,
+    validate_output_path,
 )
-from .duration import is_dateutil_available, warn_if_dateutil_unavailable
 
 __all__ = [
     "Config",
