@@ -116,5 +116,5 @@ def warn_if_dateutil_unavailable():
     if not DATEUTIL_AVAILABLE:
         print("\n⚠️  Optional: python-dateutil not installed")
         print("💡 Duration calculation will be skipped (e.g., '1 year 10 months')")
-        print("   Install with: pip install python-dateutil")
+        print("   Install with: uv sync")
         print("   (Resume will still be generated)\n")

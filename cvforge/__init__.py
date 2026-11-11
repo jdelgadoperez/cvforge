@@ -1,7 +1,8 @@
 """
-Resume PDF Generator - Modular Components
+cvforge - markdown resume to PDF generator.
 
 A professional markdown-to-PDF resume generator with extensive customization options.
+The command-line interface lives in cvforge.cli (installed as the ``cvforge`` script).
 
 Modules:
     - config: Configuration settings (colors, fonts, spacing)
@@ -11,9 +12,11 @@ Modules:
     - duration: Date and duration calculations
     - validators: File validation and error handling
     - generator: Core PDF generation logic
+    - structured: Parsed resume -> stable JSON-ready structure (``cvforge parse``)
+    - cli: argparse command-line interface (``cvforge build`` / ``cvforge parse``)
 
 Usage:
-    from modules import config, parser, generator
+    from cvforge import config, parser, generator
 
     # Parse markdown
     data = parser.parse_markdown_resume(markdown_content)
@@ -22,7 +25,7 @@ Usage:
     generator.generate_pdf_from_data(data, "output.pdf")
 
 Customization:
-    Modify modules/config.py to customize:
+    Modify cvforge/config.py to customize:
     - Color scheme
     - Font sizes and families
     - Page margins and layout
@@ -33,13 +36,19 @@ Author: Jess Delgado Perez
 License: MIT
 """
 
-__version__ = "2.0.0"
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("cvforge")
+except PackageNotFoundError:  # running from a source checkout without installing
+    __version__ = "0.0.0+unknown"
 __author__ = "Jess Delgado Perez"
 
 # Convenient imports for common usage
 from .config import Config
 from .parser import parse_markdown_resume, validate_parsed_data
 from .generator import generate_pdf_from_data
+from .structured import SCHEMA_VERSION, to_structured
 from .validators import (
     check_dependencies,
     validate_input_file,
@@ -56,6 +65,8 @@ __all__ = [
     "parse_markdown_resume",
     "validate_parsed_data",
     "generate_pdf_from_data",
+    "SCHEMA_VERSION",
+    "to_structured",
     "check_dependencies",
     "validate_input_file",
     "validate_file_extension",

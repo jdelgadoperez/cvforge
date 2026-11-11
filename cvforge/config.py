@@ -1,12 +1,9 @@
 """
 Configuration module for the resume generator.
 
-To customize colors, fonts, spacing, or other settings:
-1. Copy this file to config_custom.py
-2. Modify the values in config_custom.py
-3. Import from config_custom instead of config in markdown_to_resume_pdf.py
-
-Or modify this file directly for your needs.
+To customize colors, fonts, spacing, or other settings, edit the values in the
+Config class below. Every renderer reads from it. See config.example.py at the
+repository root for ready-made themes to copy from.
 """
 
 import os

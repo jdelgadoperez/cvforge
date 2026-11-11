@@ -66,7 +66,7 @@ def validate_input_file(md_file):
             pass
 
     error_msg += (
-        f"\n\n💡 Usage: python3 markdown_to_resume_pdf.py <input.md> [output.pdf]"
+        "\n\n💡 Usage: cvforge build <input.md> [output.pdf]"
     )
 
     return False, error_msg
@@ -197,9 +197,7 @@ def check_dependencies():
         for dep in missing_required:
             print(f"  - {dep}")
         print("\n💡 Install with:")
-        print(f"   pip install {' '.join(missing_required)}")
-        print("\nOr install all dependencies at once:")
-        print("   pip install reportlab python-dateutil")
+        print("   uv sync")
         return False, missing_required, False
 
     # Check for dateutil (optional)
@@ -219,11 +217,11 @@ def generate_output_filename(input_file, use_exports_folder=True):
 
     Args:
         input_file (str): Path to input markdown file
-        use_exports_folder (bool): If True, uses Config.EXPORTS_FOLDER for output path
+        use_exports_folder (bool): If True, uses Config.OUTPUTS_FOLDER for output path
 
     Returns:
         str: Output PDF filename (same name as input, with .pdf extension)
-             If use_exports_folder=True and EXPORTS_FOLDER is set, places file there
+             If use_exports_folder=True and OUTPUTS_FOLDER is set, places file there
 
     Examples:
         >>> generate_output_filename("resume.md", use_exports_folder=False)
