@@ -70,7 +70,7 @@ def calculate_duration(date_string):
         # Parse start date
         try:
             start_date = date_parser.parse(start_str, fuzzy=True)
-        except:
+        except (ValueError, OverflowError):
             return ""
 
         # Parse end date (handle "Present" as today)
@@ -79,7 +79,7 @@ def calculate_duration(date_string):
         else:
             try:
                 end_date = date_parser.parse(end_str, fuzzy=True)
-            except:
+            except (ValueError, OverflowError):
                 return ""
 
         # Calculate difference
@@ -116,5 +116,5 @@ def warn_if_dateutil_unavailable():
     if not DATEUTIL_AVAILABLE:
         print("\n⚠️  Optional: python-dateutil not installed")
         print("💡 Duration calculation will be skipped (e.g., '1 year 10 months')")
-        print("   Install with: pip install python-dateutil")
+        print("   Install with: uv sync")
         print("   (Resume will still be generated)\n")

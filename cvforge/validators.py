@@ -4,8 +4,8 @@ Validators module for resume PDF generation.
 Handles file validation, error checking, and helpful error messages.
 """
 
+import importlib.util
 import os
-import sys
 
 
 def validate_input_file(md_file):
@@ -45,7 +45,6 @@ def validate_input_file(md_file):
 
     # Try to find similar files
     dir_path = os.path.dirname(md_file) or "."
-    filename = os.path.basename(md_file)
 
     search_dirs = [dir_path]
 
@@ -65,9 +64,7 @@ def validate_input_file(md_file):
         except Exception:
             pass
 
-    error_msg += (
-        f"\n\n💡 Usage: python3 markdown_to_resume_pdf.py <input.md> [output.pdf]"
-    )
+    error_msg += "\n\n💡 Usage: cvforge build <input.md> [output.pdf]"
 
     return False, error_msg
 
@@ -84,9 +81,7 @@ def validate_file_extension(input_file, expected_ext=".md"):
         bool: True if extension matches or user confirms to continue, False otherwise
     """
     if not input_file.endswith(expected_ext):
-        print(
-            f"\n⚠️  Warning: Input file '{input_file}' doesn't have {expected_ext} extension"
-        )
+        print(f"\n⚠️  Warning: Input file '{input_file}' doesn't have {expected_ext} extension")
         print(f"💡 Expected a markdown file ({expected_ext})")
         response = input("Continue anyway? (y/n): ").lower()
         if response != "y":
@@ -132,7 +127,7 @@ def read_markdown_file(md_file):
         ...     print(f"Read {len(content)} characters")
     """
     try:
-        with open(md_file, "r", encoding="utf-8") as f:
+        with open(md_file, encoding="utf-8") as f:
             md_content = f.read()
     except PermissionError:
         return (
@@ -185,9 +180,7 @@ def check_dependencies():
     missing_required = []
 
     # Check for reportlab (required)
-    try:
-        import reportlab
-    except ImportError:
+    if importlib.util.find_spec("reportlab") is None:
         missing_required.append("reportlab")
 
     # Handle missing required dependencies
@@ -197,18 +190,11 @@ def check_dependencies():
         for dep in missing_required:
             print(f"  - {dep}")
         print("\n💡 Install with:")
-        print(f"   pip install {' '.join(missing_required)}")
-        print("\nOr install all dependencies at once:")
-        print("   pip install reportlab python-dateutil")
+        print("   uv sync")
         return False, missing_required, False
 
     # Check for dateutil (optional)
-    try:
-        import dateutil
-
-        has_dateutil = True
-    except ImportError:
-        has_dateutil = False
+    has_dateutil = importlib.util.find_spec("dateutil") is not None
 
     return True, [], has_dateutil
 
@@ -219,11 +205,11 @@ def generate_output_filename(input_file, use_exports_folder=True):
 
     Args:
         input_file (str): Path to input markdown file
-        use_exports_folder (bool): If True, uses Config.EXPORTS_FOLDER for output path
+        use_exports_folder (bool): If True, uses Config.OUTPUTS_FOLDER for output path
 
     Returns:
         str: Output PDF filename (same name as input, with .pdf extension)
-             If use_exports_folder=True and EXPORTS_FOLDER is set, places file there
+             If use_exports_folder=True and OUTPUTS_FOLDER is set, places file there
 
     Examples:
         >>> generate_output_filename("resume.md", use_exports_folder=False)
@@ -233,6 +219,7 @@ def generate_output_filename(input_file, use_exports_folder=True):
         '/path/to/my_resume.pdf'
     """
     import os
+
     from .config import Config
 
     # Get base filename without extension
@@ -248,10 +235,8 @@ def generate_output_filename(input_file, use_exports_folder=True):
             try:
                 os.makedirs(exports_folder, exist_ok=True)
             except Exception as e:
-                print(
-                    f"\n⚠️  Warning: Could not create exports folder '{exports_folder}': {e}"
-                )
-                print(f"💡 Saving to current directory instead")
+                print(f"\n⚠️  Warning: Could not create exports folder '{exports_folder}': {e}")
+                print("💡 Saving to current directory instead")
                 return pdf_name
 
         return os.path.join(exports_folder, pdf_name)

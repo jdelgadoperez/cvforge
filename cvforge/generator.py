@@ -6,20 +6,20 @@ Handles document creation, section rendering, and layout.
 """
 
 import re
-import sys
+
 from reportlab.platypus import (
-    SimpleDocTemplate,
+    KeepTogether,
     Paragraph,
+    SimpleDocTemplate,
     Spacer,
     Table,
     TableStyle,
-    KeepTogether,
 )
 
 from .config import Config
-from .styles import create_custom_styles
-from .formatter import convert_markdown_formatting, format_contact_line
 from .duration import calculate_duration
+from .formatter import convert_markdown_formatting, format_contact_line
+from .styles import create_custom_styles
 
 
 def create_section_divider():
@@ -79,9 +79,7 @@ def render_summary_section(story, section, styles):
 
     # Summary text - join all content into a paragraph
     summary_text = " ".join(section["content"])
-    section_group.append(
-        Paragraph(convert_markdown_formatting(summary_text), styles["Summary"])
-    )
+    section_group.append(Paragraph(convert_markdown_formatting(summary_text), styles["Summary"]))
 
     # Keep summary together if configured
     if Config.KEEP_SECTIONS_TOGETHER:
@@ -163,11 +161,7 @@ def render_experience_entry(story, subsection, styles):
             # Check if next line is the dates
             if i + 1 < len(subsection["lines"]):
                 next_line = subsection["lines"][i + 1].strip()
-                if (
-                    next_line
-                    and not next_line.startswith("**")
-                    and not next_line.startswith("•")
-                ):
+                if next_line and not next_line.startswith("**") and not next_line.startswith("•"):
                     # Remove any existing duration in parentheses
                     dates_clean = re.sub(r"\s*\([^)]*\)\s*$", "", next_line).strip()
                     # Calculate duration
@@ -183,9 +177,7 @@ def render_experience_entry(story, subsection, styles):
         if line.startswith("•"):
             # Bullet point
             bullets.append(convert_markdown_formatting(line))
-        elif (
-            "Technologies:" in line or "Tech used:" in line or line.startswith("**Tech")
-        ):
+        elif "Technologies:" in line or "Tech used:" in line or line.startswith("**Tech"):
             # Technologies line
             tech_line = convert_markdown_formatting(line)
 
@@ -467,7 +459,7 @@ def generate_pdf_from_data(data, output_file):
         return True
     except PermissionError:
         print(f"\n❌ Error: Permission denied writing to '{output_file}'")
-        print(f"💡 Make sure the file isn't open in another application")
+        print("💡 Make sure the file isn't open in another application")
         return False
     except Exception as e:
         print(f"\n❌ Error creating PDF: {e}")

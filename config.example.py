@@ -7,17 +7,10 @@ CUSTOMIZATION INSTRUCTIONS:
 This is an example configuration showing how to customize your resume's appearance.
 
 TO USE THIS FILE:
-1. Copy this file: cp config.example.py config_custom.py
-2. Edit config_custom.py with your preferred settings
-3. Import Config from config_custom in markdown_to_resume_pdf.py:
-
-   Change this line:
-   from modules import Config
-
-   To this:
-   from config_custom import Config
-
-OR simply edit modules/config.py directly if you don't need multiple configurations.
+Every renderer reads settings from ``cvforge.config.Config``, so a theme takes effect
+by copying its values into the ``Config`` class in cvforge/config.py (the file this
+example mirrors). Pick a theme below, copy its attributes over the matching ones in
+cvforge/config.py, and re-run ``uv run cvforge build <resume.md>``.
 
 WHAT YOU CAN CUSTOMIZE:
 - Colors: Change the hex color codes for a different color scheme
@@ -30,7 +23,7 @@ See the examples below for different customization scenarios.
 """
 
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 
 
@@ -42,7 +35,7 @@ class GreenThemeConfig:
 
     # Color scheme
     PRIMARY_COLOR = colors.HexColor("#047857")  # Emerald green
-    ACCENT_COLOR = colors.HexColor("#065f46")   # Darker green
+    ACCENT_COLOR = colors.HexColor("#065f46")  # Darker green
     LIGHT_GRAY = colors.HexColor("#6b7280")
     DARK_GRAY = colors.HexColor("#1f2937")
 
@@ -97,7 +90,7 @@ class GreenThemeConfig:
 
     # File paths
     INPUTS_FOLDER = "~/Documents/resumes/input"
-    EXPORTS_FOLDER = "~/Documents/resumes/output"
+    OUTPUTS_FOLDER = "~/Documents/resumes/output"
 
     # Features
     CALCULATE_DURATIONS = True
@@ -167,7 +160,7 @@ class CompactConfig:
 
     # File paths
     INPUTS_FOLDER = "~/Documents/resumes/input"
-    EXPORTS_FOLDER = "~/Documents/resumes/output"
+    OUTPUTS_FOLDER = "~/Documents/resumes/output"
 
     # Features
     CALCULATE_DURATIONS = True
@@ -182,9 +175,9 @@ class ClassicConfig:
 
     # Simple black/gray colors
     PRIMARY_COLOR = colors.HexColor("#000000")  # Pure black
-    ACCENT_COLOR = colors.HexColor("#333333")   # Dark gray
-    LIGHT_GRAY = colors.HexColor("#666666")     # Medium gray
-    DARK_GRAY = colors.HexColor("#000000")      # Black
+    ACCENT_COLOR = colors.HexColor("#333333")  # Dark gray
+    LIGHT_GRAY = colors.HexColor("#666666")  # Medium gray
+    DARK_GRAY = colors.HexColor("#000000")  # Black
 
     # Fonts
     FONT_FAMILY_BASE = "Helvetica"
@@ -237,7 +230,7 @@ class ClassicConfig:
 
     # File paths
     INPUTS_FOLDER = "~/Documents/resumes/input"
-    EXPORTS_FOLDER = "~/Documents/resumes/output"
+    OUTPUTS_FOLDER = "~/Documents/resumes/output"
 
     # Features
     CALCULATE_DURATIONS = True
@@ -247,10 +240,8 @@ class ClassicConfig:
 # ====================
 # TO USE ONE OF THESE CONFIGURATIONS:
 # ====================
-# 1. Copy the class you want (e.g., GreenThemeConfig)
-# 2. Rename it to just "Config"
-# 3. Save this file as config_custom.py
-# 4. Update the import in markdown_to_resume_pdf.py
+# 1. Pick the class you want (e.g., GreenThemeConfig)
+# 2. Copy its attribute values over the matching ones in cvforge/config.py
 
 # Example: To use the Green Theme
 # Config = GreenThemeConfig
