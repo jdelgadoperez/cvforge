@@ -50,3 +50,25 @@ sections → content lines + `###` subsections) → either `generator.generate_p
   so changing it means updating the assertions. Write PDFs to `tmp_path`, never the repo.
 - `outputs/` is gitignored; don't commit generated PDFs.
 - Conventional Commits.
+
+## Backlog (GitHub Issues)
+
+Work ideas live as GitHub Issues on this repo, opened from the "Backlog item" form
+(`.github/ISSUE_TEMPLATE/backlog_item.yml`). Labels are declared in `.github/labels.json` and
+synced by `.github/workflows/labels.yml` — edit the JSON, don't create labels by hand.
+
+- **Status:** `status:idea` (rough) → `status:ready` (has acceptance criteria) →
+  `status:in-progress` → open PR (in review) → closed issue (done).
+- **Priority / size:** `priority:high|med|low`, `size:S|M|L`. **Type:** `feature`, `bug`, `chore`,
+  `research`.
+
+When asked to "pick up work" (or similar) without a specific issue:
+
+1. Take the open `status:ready` issue with the highest priority (ties: smallest size, then oldest).
+   Skip anything already `status:in-progress`. Never start a `status:idea` issue — ask, or propose
+   acceptance criteria in a comment instead.
+2. Swap `status:ready` for `status:in-progress` when you start.
+3. Open the PR with `Closes #<n>` in the body so merging closes the issue, and treat the issue's
+   acceptance criteria as the definition of done.
+4. Ideas you notice along the way that are out of scope become new `status:idea` issues rather
+   than scope creep.
