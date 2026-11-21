@@ -50,6 +50,7 @@ sections → content lines + `###` subsections) → either `generator.generate_p
   so changing it means updating the assertions. Write PDFs to `tmp_path`, never the repo.
 - `outputs/` is gitignored; don't commit generated PDFs.
 - Conventional Commits.
+
 ## Backlog (GitHub Issues)
 
 Work ideas live as GitHub Issues on this repo, opened from the "Backlog item" form
