@@ -67,9 +67,13 @@ def calculate_duration(date_string):
 
         start_str, end_str = parts
 
+        # Month-only dates ("June 2018") are pinned to the 1st. Without a default, dateutil
+        # borrows today's day of month, so durations would shift depending on when you build.
+        default = datetime.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+
         # Parse start date
         try:
-            start_date = date_parser.parse(start_str, fuzzy=True)
+            start_date = date_parser.parse(start_str, fuzzy=True, default=default)
         except (ValueError, OverflowError):
             return ""
 
@@ -78,7 +82,7 @@ def calculate_duration(date_string):
             end_date = datetime.now()
         else:
             try:
-                end_date = date_parser.parse(end_str, fuzzy=True)
+                end_date = date_parser.parse(end_str, fuzzy=True, default=default)
             except (ValueError, OverflowError):
                 return ""
 

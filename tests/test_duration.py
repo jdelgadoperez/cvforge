@@ -38,6 +38,18 @@ def test_present_counts_to_today(monkeypatch):
     assert duration.calculate_duration("January 2025 - Current") == "(2 months)"
 
 
+def test_month_only_dates_ignore_todays_day(monkeypatch):
+    # dateutil fills a missing day from the real "today", so "January 2020" used to become
+    # e.g. January 21 2020 and a "Present" of March 1 came up a month short.
+    class FirstOfMonth(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return cls(2025, 3, 1)
+
+    monkeypatch.setattr(duration, "datetime", FirstOfMonth)
+    assert duration.calculate_duration("January 2020 - Present") == "(5 years 2 months)"
+
+
 def test_disabled_by_config(monkeypatch):
     monkeypatch.setattr(Config, "CALCULATE_DURATIONS", False)
     assert duration.calculate_duration("June 2018 - September 2021") == ""
