@@ -35,6 +35,10 @@ exports/
 outputs/
 images/
 
+# Personal resume inputs - only the sample fixture is tracked
+inputs/*
+!inputs/test_resume.md
+
 # Logs
 *.log
 logs/
