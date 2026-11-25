@@ -145,25 +145,34 @@ def read_markdown_file(md_file):
 
 def validate_output_path(output_file):
     """
-    Validate that output file path is writable and has correct extension.
+    Validate the output file path, creating its parent directory when missing.
 
     Args:
         output_file (str): Path to output file
 
     Returns:
-        str: Validated output path (adds .pdf extension if missing)
+        tuple: (is_valid: bool, resolved_path: str or error_message: str)
+            If valid, returns (True, output_path_with_pdf_extension)
+            If invalid, returns (False, error_message)
     """
     # Add .pdf extension if missing
     if not output_file.endswith(".pdf"):
         output_file += ".pdf"
 
-    # Check if directory is writable (if directory specified)
     output_dir = os.path.dirname(output_file)
-    if output_dir and not os.path.exists(output_dir):
-        print(f"\n⚠️  Warning: Output directory '{output_dir}' does not exist")
-        print("💡 The directory will be created if possible")
+    if output_dir and not os.path.isdir(output_dir):
+        try:
+            os.makedirs(output_dir, exist_ok=True)
+        except OSError as e:
+            # exist_ok=True still raises when the path is taken by a non-directory.
+            return (
+                False,
+                f"\n❌ Error: Could not create output directory '{output_dir}': {e}"
+                "\n💡 Create the directory yourself, or choose a different output path",
+            )
+        print(f"\n💡 Created output directory: {output_dir}")
 
-    return output_file
+    return True, output_file
 
 
 def check_dependencies():

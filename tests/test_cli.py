@@ -1,4 +1,6 @@
+import errno
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -57,6 +59,25 @@ def test_build_adds_pdf_extension_and_default_output_folder(sample_path, tmp_pat
     # No output argument: written to the configured outputs folder under the cwd.
     assert cli.main(["build", str(sample_path)]) == 0
     assert (tmp_path / "outputs" / "test_resume.pdf").read_bytes().startswith(b"%PDF")
+
+
+def test_build_creates_missing_output_directory(sample_path, tmp_path, capsys):
+    out_pdf = tmp_path / "a" / "b" / "c" / "resume.pdf"
+    assert cli.main(["build", str(sample_path), str(out_pdf)]) == 0
+    assert out_pdf.read_bytes().startswith(b"%PDF")
+    assert str(out_pdf.parent) in capsys.readouterr().out
+
+
+def test_build_fails_when_output_directory_cannot_be_created(sample_path, tmp_path, capsys):
+    blocker = tmp_path / "blocker"
+    blocker.write_text("not a directory", encoding="utf-8")
+    out_pdf = blocker / "resume.pdf"
+
+    assert cli.main(["build", str(sample_path), str(out_pdf)]) == 1
+    out = capsys.readouterr().out
+    assert str(blocker) in out
+    assert os.strerror(errno.EEXIST) in out
+    assert blocker.read_text(encoding="utf-8") == "not a directory"
 
 
 def test_build_overwrite_prompt_and_force(sample_path, tmp_path, monkeypatch):

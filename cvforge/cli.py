@@ -64,7 +64,11 @@ def cmd_build(args):
 
     if args.output:
         # Explicit output path: don't use the configured outputs folder.
-        output_file = validate_output_path(args.output)
+        is_valid, result = validate_output_path(args.output)
+        if not is_valid:
+            print(result)
+            return 1
+        output_file = result
     else:
         output_file = generate_output_filename(input_file, use_exports_folder=True)
 
