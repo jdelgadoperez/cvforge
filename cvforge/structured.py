@@ -11,6 +11,7 @@ version; removing or renaming a key, or changing a value's type, bumps it.
 """
 
 import re
+import sys
 
 SCHEMA_VERSION = 1
 
@@ -78,6 +79,11 @@ def _strip_bullet(line):
 
 def _is_bullet(line):
     return bool(_BULLET_RE.match(line))
+
+
+def _warn(message):
+    """Default diagnostic sink: stderr, so ``cvforge parse`` keeps stdout pure JSON."""
+    print(f"⚠️  {message}", file=sys.stderr)
 
 
 def parse_dates(raw):
@@ -206,7 +212,23 @@ def _empty_job(company, condensed=False):
     }
 
 
-def _parse_condensed_line(line):
+def _is_condensed_entry(line):
+    """
+    True when ``line`` opens a condensed ``**Role** | Company | Dates`` entry.
+
+    A line that merely describes the entry above it ("Led the migration.", "- Shipped X")
+    has no pipe fields at all, or has no bold role and no date in its last field.
+    """
+    body = _strip_bullet(line)
+    if "|" not in body:
+        return False
+    if body.startswith("**"):
+        return True
+    last_field = body.rsplit("|", 1)[-1]
+    return bool(_YEAR_RE.search(last_field) or _PRESENT_RE.search(last_field))
+
+
+def _parse_condensed_line(line, where, warn):
     """``**Role** | Company | Dates`` -> experience entry (the format of "Earlier Experience")."""
     parts = [strip_markdown(p) for p in line.split("|")]
     job = _empty_job(None, condensed=True)
@@ -219,13 +241,41 @@ def _parse_condensed_line(line):
             job["dates"] = parse_dates(parts[1])
         else:
             job["company"] = parts[1] or None
+    if job["company"] is None:
+        warn(f'{where}: no company field in "{strip_markdown(line)}"')
     return job
 
 
-def _parse_experience_entry(sub):
+def _parse_condensed_block(lines, where, warn):
+    """
+    Parse a block of condensed ``**Role** | Company | Dates`` lines.
+
+    A line that is not itself an entry describes the entry above it, so it joins that
+    entry's bullets instead of becoming an entry of its own with no company. A line with
+    no entry above it has nothing to describe, so it is reported and skipped.
+    """
+    jobs = []
+    for raw_line in lines:
+        line = raw_line.strip()
+        if not line:
+            continue
+        if _is_condensed_entry(line):
+            jobs.append(_parse_condensed_line(_strip_bullet(line), where, warn))
+            continue
+        detail = strip_markdown(_strip_bullet(line))
+        if not detail:
+            continue
+        if jobs:
+            jobs[-1]["bullets"].append(detail)
+        else:
+            warn(f'{where}: ignored "{detail}" -- no entry above it to describe')
+    return jobs
+
+
+def _parse_experience_entry(sub, warn):
     name = strip_markdown(sub["name"])
     if "earlier" in name.lower() and "experience" in name.lower():
-        return [_parse_condensed_line(line) for line in sub["lines"] if line.strip()]
+        return _parse_condensed_block(sub["lines"], name, warn)
 
     job = _empty_job(name)
     expect_dates = False
@@ -261,13 +311,12 @@ def _parse_experience_entry(sub):
     return [job]
 
 
-def _parse_experience(section):
+def _parse_experience(section, warn):
     jobs = []
     for sub in section["subsections"]:
-        jobs.extend(_parse_experience_entry(sub))
-    for line in section["content"]:
-        if line.strip().startswith("**") and "|" in line:
-            jobs.append(_parse_condensed_line(line))
+        jobs.extend(_parse_experience_entry(sub, warn))
+    name = strip_markdown(section["name"])
+    jobs.extend(_parse_condensed_block(section["content"], name, warn))
     return jobs
 
 
@@ -344,12 +393,15 @@ def _section_lines(section):
     return lines
 
 
-def to_structured(data):
+def to_structured(data, warn=None):
     """
     Convert ``parse_markdown_resume`` output to the stable ``cvforge parse`` shape.
 
-    See README.md ("parse JSON shape") for the documented contract.
+    See README.md ("parse JSON shape") for the documented contract. Lines that cannot be
+    placed are passed to ``warn`` (default: one line on stderr, never on stdout).
     """
+    if warn is None:
+        warn = _warn
     result = {
         "schema_version": SCHEMA_VERSION,
         "name": strip_markdown(data.get("name", "")),
@@ -371,7 +423,7 @@ def to_structured(data):
         elif kind == "skills":
             result["skills"].extend(_parse_skills(section))
         elif kind == "experience":
-            result["experience"].extend(_parse_experience(section))
+            result["experience"].extend(_parse_experience(section, warn))
         elif kind == "education":
             result["education"].extend(_parse_education(section))
         elif kind == "certifications":
