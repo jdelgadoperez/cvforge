@@ -123,6 +123,15 @@ def create_custom_styles():
         )
     )
 
+    # Description line under a condensed "Earlier Experience" entry
+    styles.add(
+        ParagraphStyle(
+            name="CondensedDetail",
+            parent=styles["ResumeBullet"],
+            leftIndent=Config.CONDENSED_DETAIL_INDENT,
+        )
+    )
+
     # Skills
     styles.add(
         ParagraphStyle(

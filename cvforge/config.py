@@ -86,6 +86,7 @@ class Config:
 
     # Indentation
     BULLET_INDENT = 12  # Left indent for bullet points
+    CONDENSED_DETAIL_INDENT = 24  # Left indent for a description under a condensed entry
 
     # ====================
     # CONTENT FORMATTING
