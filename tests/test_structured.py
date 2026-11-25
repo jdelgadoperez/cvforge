@@ -30,6 +30,17 @@ def structured(md):
     return to_structured(parse_markdown_resume(md))
 
 
+def structured_with_diagnostics(md):
+    """``(structured_result, diagnostic_messages)`` -- diagnostics collected, not printed."""
+    messages = []
+    return to_structured(parse_markdown_resume(md), warn=messages.append), messages
+
+
+def condensed_resume(*experience_lines):
+    body = "\n".join(experience_lines)
+    return f"# Jane\n**Engineer**\n## EXPERIENCE\n### Earlier Experience\n{body}\n"
+
+
 @pytest.fixture
 def sample(sample_md):
     return structured(sample_md)
@@ -145,6 +156,71 @@ Python, Kotlin
     ]
 
 
+def test_condensed_entry_keeps_a_following_prose_line_as_a_bullet():
+    entry = "**Web Developer** | Pensacola State College | 2013 - 2014"
+    description = "Led migration of Classic ASP sites to a custom WordPress stack."
+    result, messages = structured_with_diagnostics(condensed_resume(entry, description))
+
+    jobs = result["experience"]
+    assert len(jobs) == 1
+    assert jobs[0]["company"] == "Pensacola State College"
+    assert jobs[0]["role"] == "Web Developer"
+    assert jobs[0]["bullets"] == [description]
+    assert messages == []
+
+
+def test_condensed_entry_keeps_a_following_bullet_line_as_a_bullet():
+    entry = "**Web Developer** | Pensacola State College | 2013 - 2014"
+    description = "Led migration of Classic ASP sites to a custom WordPress stack."
+    result, messages = structured_with_diagnostics(condensed_resume(entry, f"\u2022 {description}"))
+
+    jobs = result["experience"]
+    assert len(jobs) == 1
+    assert jobs[0]["bullets"] == [description]
+    assert messages == []
+
+
+def test_condensed_entries_never_have_a_null_company():
+    entries = [
+        "**Web Developer** | Pensacola State College | 2013 - 2014",
+        "Led migration of Classic ASP sites to a custom WordPress stack.",
+        "\u2022 Trained two junior developers.",
+        "**Support Engineer** | Helpdesk Co | 2012 - 2013",
+        "- Handled escalations.",
+    ]
+    result, messages = structured_with_diagnostics(condensed_resume(*entries))
+
+    jobs = result["experience"]
+    assert [job["company"] for job in jobs] == ["Pensacola State College", "Helpdesk Co"]
+    assert all(job["company"] is not None for job in jobs)
+    assert jobs[0]["bullets"] == [entries[1], "Trained two junior developers."]
+    assert jobs[1]["bullets"] == ["Handled escalations."]
+    assert messages == []
+
+
+def test_condensed_description_with_no_entry_above_it_is_reported_and_skipped():
+    orphan = "Everything before 2012 was contract work."
+    entry = "**Web Developer** | Pensacola State College | 2013 - 2014"
+    result, messages = structured_with_diagnostics(condensed_resume(orphan, entry))
+
+    jobs = result["experience"]
+    assert [job["company"] for job in jobs] == ["Pensacola State College"]
+    assert jobs[0]["bullets"] == []
+    assert len(messages) == 1
+    assert orphan in messages[0]
+    assert "Earlier Experience" in messages[0]
+
+
+def test_condensed_entry_without_a_company_field_is_reported():
+    entry = "**Intern** | 2015"
+    result, messages = structured_with_diagnostics(condensed_resume(entry))
+
+    jobs = result["experience"]
+    assert (jobs[0]["role"], jobs[0]["company"]) == ("Intern", None)
+    assert len(messages) == 1
+    assert "Intern | 2015" in messages[0]
+
+
 def test_experience_variants():
     md = """# Jane
 **Engineer**
@@ -161,7 +237,8 @@ Tech Stack: Go, Kafka
 **Intern** | 2015
 **Contractor** | Gamma LLC
 """
-    jobs = structured(md)["experience"]
+    # "**Intern** | 2015" has no company field, which is reported (see the test above).
+    jobs = structured_with_diagnostics(md)[0]["experience"]
     acme = jobs[0]
     assert acme["role"] == "Staff Engineer"
     assert acme["dates"] == {

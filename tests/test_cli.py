@@ -35,6 +35,21 @@ def test_parse_missing_file_writes_only_to_stderr(tmp_path, capsys, monkeypatch)
     assert "not found" in err
 
 
+def test_parse_keeps_stdout_pure_json_when_a_line_is_reported(tmp_path, capsys):
+    md = tmp_path / "earlier.md"
+    md.write_text(
+        "# Jane\n**Engineer**\n## EXPERIENCE\n### Earlier Experience\n"
+        "A note with no entry above it.\n"
+        "**Web Developer** | Acme | 2013 - 2014\n",
+        encoding="utf-8",
+    )
+    assert cli.main(["parse", str(md)]) == 0
+    out, err = capsys.readouterr()
+    payload = json.loads(out)
+    assert [job["company"] for job in payload["experience"]] == ["Acme"]
+    assert "A note with no entry above it." in err
+
+
 def test_parse_rejects_resume_without_title(tmp_path, capsys):
     md = tmp_path / "bad.md"
     md.write_text("# Jane\n## SKILLS\nGo\n", encoding="utf-8")

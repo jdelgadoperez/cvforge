@@ -205,7 +205,8 @@ def render_earlier_experience(story, subsection, styles):
     Render "Earlier Experience" section with condensed entries.
 
     Parses lines in format: **Company** | Title | Dates
-    Adds duration calculation to the dates.
+    Adds duration calculation to the dates. A line that is not itself an entry describes
+    the entry above it and is rendered indented under it.
 
     Args:
         story (list): ReportLab story list to append elements to
@@ -253,6 +254,12 @@ def render_earlier_experience(story, subsection, styles):
 
             if converted.strip():
                 earlier_exp_group.append(Paragraph(converted, styles["ResumeBullet"]))
+                earlier_exp_group.append(Spacer(1, 4))
+        else:
+            # A description line belonging to the entry above it.
+            converted = convert_markdown_formatting(line)
+            if converted.strip():
+                earlier_exp_group.append(Paragraph(converted, styles["CondensedDetail"]))
                 earlier_exp_group.append(Spacer(1, 4))
 
     earlier_exp_group.append(Spacer(1, 6))
