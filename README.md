@@ -72,10 +72,10 @@ plain text: markdown emphasis, links and contact emoji are stripped.
 
 | Key            | Type                                                                | Notes                                                                                     |
 | -------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `company`      | string \| null                                                      | the `### Company` heading (for condensed entries, the second `\|` field)                  |
+| `company`      | string \| null                                                      | the `### Company` heading (for condensed entries, the second `\|` field); `null` only when a condensed entry has no company field, which is reported on stderr |
 | `role`         | string \| null                                                      | the `**Role**` line                                                                       |
 | `dates`        | `{raw: string, start: string\|null, end: string\|null, current: bool}` | as written, not normalized; a hand-typed trailing `(2 years)` is dropped; `current` is true when the end is Present/Current/Now |
-| `bullets`      | string[]                                                            | `•` / `-` / `*` bullets (and any free text under the role), markers removed               |
+| `bullets`      | string[]                                                            | `•` / `-` / `*` bullets (and any free text under the role), markers removed; for a condensed entry, the description lines following it                      |
 | `technologies` | string[]                                                            | from a `Technologies:` / `Tech used:` / `Tech Stack:` line, split and trimmed             |
 | `condensed`    | bool                                                                | true for one-line entries under `### Earlier Experience`                                  |
 
@@ -162,6 +162,7 @@ Start Date - End Date
 ### Earlier Experience
 
 **Role 1** | Company 1 | Dates
+A line after an entry describes it (plain text or a bullet).
 **Role 2** | Company 2 | Dates
 
 ## EDUCATION
@@ -177,6 +178,10 @@ Notes:
   `California`). Putting the email on the contact line is the safest way to get it detected.
 - Durations such as `(4 years 10 months)` are calculated automatically from `Start - End` dates
   (`Present` counts to today) and shown in the PDF.
+- Under `### Earlier Experience`, each `**Role** | Company | Dates` line is one entry. A following
+  line that isn't itself an entry describes the one above it: it becomes one of that entry's
+  `bullets` in `parse`, and is rendered indented under it in the PDF. A description line with no
+  entry above it has nothing to describe, so it is skipped and reported on stderr.
 
 ## Customization
 
